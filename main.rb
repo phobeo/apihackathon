@@ -1,9 +1,14 @@
+$LOAD_PATH << '.'
+
 require 'sinatra'
 require 'sinatra/base'
 require 'bundler/setup'
 
-class Main < Sinatra::Base
-  get '/' do
-    erb :index
-  end
+require 'config'
+
+require 'helpers/misc'
+require 'user'
+
+get '/' do
+  erb :index
 end
