@@ -5,7 +5,7 @@ require 'sinatra/base'
 require 'bundler/setup'
 
 require 'config'
-require 'notifier'
+require 'lib/notifier'
 
 require 'helpers/misc'
 require 'user'

@@ -1,3 +1,5 @@
+require 'pusher'
+
 configure do
   set(:twitter_config, {
     :key => ENV['TWITTER_KEY'] || 'key',
