@@ -1,0 +1,168 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!-- Consider adding a manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/b/378 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <title></title>
+  
+  <style type="text/css" media="screen">
+    #players {
+      margin-top: 20px;
+    }
+    .player {
+      text-align: center;
+    }
+    #word {
+      text-align: center;
+      font-size: 60pt;
+      line-height: 60pt;
+      padding: 15pt;
+    }
+    form .input-append .btn {
+      margin-left: none;
+      -webkit-border-radius: 0 3px 3px 0;
+      -moz-border-radius: 0 3px 3px 0;
+      border-radius: 0 3px 3px 0;
+      border-left: none;
+    }
+    #log .control-group {
+      margin: 0px;
+    }
+    #log .control-label {
+      font-weight: bold;
+    }
+    #log .controls {
+      padding-top: 5px;
+    }
+    #log .controls p {
+      margin: 0px;
+      padding:0px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="players" class="row">
+      <script type="text/x-handlebars">
+        {{#each App.gameController.players}}
+          {{view App.playerOverviewView playerBinding="this"}}
+        {{/each}}
+      </script>
+    </div>
+    <p id="word">
+      _ O U _ E
+    </p>
+    
+    <form method="post" accept-charset="utf-8" class="form-horizontal">
+      <div class="control-group">
+        <div class="controls">
+          <input class="input-xxlarge" name="" placeholder="/help">
+          <input class="btn btn-primary" type="submit" name="send" value="send!">
+        </div>
+      </div>
+    </form>
+    
+    <div id="log" class="form-horizontal">
+      <script type="text/x-handlebars">
+        {{view App.activityView}}
+      </script>
+    </div>
+  </div>
+  
+  <script type="text/x-handlebars" data-template-name="player-overview">
+    <div class="player span3">
+      <div class="thumbnail">
+        <h5>{{player.username}}</h5>
+        <img src="http://placekitten.com/210/210" alt="">
+      </div>
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars" data-template-name="activity">
+  {{#collection contentBinding="App.activityController"}}
+    {{#if content.msg}}
+      <div class="control-group">
+        <label class="control-label">{{content.username}}</label>
+        <div class="controls">
+          <p class="help-block">{{content.msg}}</p>
+        </div>
+      </div>
+    {{/if}}
+    {{#if content.clue}}
+      <div class="control-group warning">
+        <label class="control-label">clue!</label>
+        <div class="controls">
+          <p class="help-block"><strong>{{content.requestedBy}}</strong> requested a clue</p>
+          <p class="help-block">{{content.clue}}</p>
+        </div>
+      </div>
+    {{/if}}
+    {{#if content.guess}}
+      <div class="control-group success">
+        <label class="control-label">{{content.guess}}</label>
+        <div class="controls">
+          <p class="help-block">guessed {{content.letters}} letters</p>
+        </div>
+      </div>
+    {{/if}}
+    {{#if content.fail}}
+      <div class="control-group error">
+        <label class="control-label">{{content.fail}}</label>
+        <div class="controls">
+          <p class="help-block">failed!</p>
+        </div>
+      </div>
+    {{/if}}
+  {{/collection}}
+  </script>
+  <script src="/js/libs/jquery-1.7.1.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="/js/libs/ember-0.9.5.min.js" type="text/javascript" charset="utf-8"></script>
+  <!--script src="http://js.pusher.com/1.11/pusher.min.js"></script-->
+  <script type="text/javascript" charset="utf-8">
+    (function () {
+      window.App = Ember.Application.create();
+      
+      App.Player = Person = Ember.Object.extend({
+        username: 'ladybenko',
+        wordProgress: '_______',
+        life: 0
+      });
+      
+      App.activityController = Ember.ArrayProxy.create({
+        content: [
+          {type: 'clue', requestedBy: 'ernesto', clue: 'text'},
+          {type: 'msg', username: 'ernesto', msg: 'Lorem ipsum dolor sit amet'},
+          {type: 'guess', guess: 'ernesto', letters: 3},
+          {type: 'fail', fail: 'ernesto'},
+          {type: 'help', help: 'Blah Blah Blah'}
+        ]
+      });
+      
+      App.gameController = Ember.Object.create({
+        players: [
+          App.Player.create({username: 'ernesto'}),
+          App.Player.create({username: 'ladybenko'})
+        ]
+      });
+      
+      App.playerOverviewView = Ember.View.extend({
+        templateName: 'player-overview'
+      });
+      
+      App.activityView = Ember.View.extend({
+        templateName: 'activity'
+      });
+    })();
+  </script>
+</body>
+</html>
