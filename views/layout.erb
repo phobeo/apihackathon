@@ -49,7 +49,7 @@
           </ul>
 
 		  	<% unless @user.nil? %>
-          <p class="navbar-text pull-right logged-in">Logged in as <a href="#"><%= @user.name %></a> | <a href="/logout">Logout</a></p>
+          <p class="navbar-text pull-right logged-in">Logged in as <a href="#"><%= @user %></a> | <a href="/logout">Logout</a></p>
 				<% else %>
 					<p class="navbar-text pull-right logged-in"><a href="/twitter/connect">Login</a>
 				<% end %>

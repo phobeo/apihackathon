@@ -19,6 +19,7 @@ get '/twitter/callback' do
   twitter = Social::Twitter.new(settings.twitter_config, session)
   if twitter.authenticate!(session)
     redirect '/'
+    # TODO: add user to the pool
   else
     session.clear
     status 403
