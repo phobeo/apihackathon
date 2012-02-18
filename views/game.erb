@@ -22,6 +22,11 @@
     .player {
       text-align: center;
     }
+    .player .score {
+      font-weight: bold;
+      font-size: 60pt;
+      line-height: 60pt;
+    }
     #word {
       text-align: center;
       font-size: 60pt;
@@ -60,13 +65,15 @@
       </script>
     </div>
     <p id="word">
-      _ O U _ E
+      <script type="text/x-handlebars">
+        {{App.gameController.word}}
+      </script>
     </p>
     
     <form method="post" accept-charset="utf-8" class="form-horizontal">
       <div class="control-group">
         <div class="controls">
-          <input class="input-xxlarge" name="" placeholder="/help">
+          <input class="input-xxlarge" placeholder="/help" id="cmd">
           <input class="btn btn-primary" type="submit" name="send" value="send!">
         </div>
       </div>
@@ -82,8 +89,8 @@
   <script type="text/x-handlebars" data-template-name="player-overview">
     <div class="player span3">
       <div class="thumbnail">
-        <h5>{{player.username}}</h5>
-        <img src="http://placekitten.com/210/210" alt="">
+        <h5>{{player.username}}'s fails left</h5><!--'-->
+        <p class="score">{{player.lives}}</p>
       </div>
     </div>
   </script>
@@ -123,37 +130,84 @@
         </div>
       </div>
     {{/if}}
+    {{#if content.error}}
+      <div class="control-group error">
+        <label class="control-label">!!!!!</label>
+        <div class="controls">
+          <div class="help-block">{{content.error}}</div>
+        </div>
+      </div>
+    {{/if}}
+    
+    {{#if content.help}}
+      <div class="control-group error">
+        <div class="controls">
+          <p class="help-block">{{{content.help}}}</p>
+        </div>
+      </div>
+    {{/if}}
   {{/collection}}
   </script>
+  <div id="help" style="display:none">
+    This is OK<br>
+    and works
+  </div>
   <script src="/js/libs/jquery-1.7.1.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="/js/libs/ember-0.9.5.min.js" type="text/javascript" charset="utf-8"></script>
-  <!--script src="http://js.pusher.com/1.11/pusher.min.js"></script-->
+  <script src="http://js.pusher.com/1.11/pusher.min.js"></script>
   <script type="text/javascript" charset="utf-8">
     (function () {
       window.App = Ember.Application.create();
+      // To add ERB (channel)
+      App.activityChannel = (new Pusher('0d4b173d1715a936068c')).subscribe('test-hangman');
+      App.input = $('input#cmd');
+      App.maxTries = 5;
       
       App.Player = Person = Ember.Object.extend({
         username: 'ladybenko',
         wordProgress: '_______',
-        life: 0
+        tries: 0,
+        
+        word: function() {
+          this.get('wordProgress').split('').join(' ');
+        }.property('wordProgress'),
+        
+        lives: function () {
+          return App.maxTries - this.get('tries');
+        }.property('tries')
+      });
+      
+      App.players = {
+        // To add ERB (player initializatio)
+        'ernesto': App.Player.create({username: 'ernesto'}),
+        'ladybenko': App.Player.create({username: 'ladybenko'})
+      }
+      
+      // To add ERB (player initializatio)
+      App.currentPlayer = App.players['ernesto'];
+      
+      App.gameController = Ember.Object.create({
+        // To add ERB (player asignation)
+        players: [
+          App.players['ernesto'],
+          App.players['ladybenko']
+        ],
+        wordBinding: 'App.currentPlayer.word'
       });
       
       App.activityController = Ember.ArrayProxy.create({
-        content: [
-          {type: 'clue', requestedBy: 'ernesto', clue: 'text'},
-          {type: 'msg', username: 'ernesto', msg: 'Lorem ipsum dolor sit amet'},
-          {type: 'guess', guess: 'ernesto', letters: 3},
-          {type: 'fail', fail: 'ernesto'},
-          {type: 'help', help: 'Blah Blah Blah'}
-        ]
+        content: []
       });
       
-      App.gameController = Ember.Object.create({
-        players: [
-          App.Player.create({username: 'ernesto'}),
-          App.Player.create({username: 'ladybenko'})
-        ]
-      });
+      // To add ERB (activity log)
+      App.activityController.pushObjects([
+        {type: 'clue', requestedBy: 'ernesto', clue: 'text'},
+        {type: 'msg', username: 'ernesto', msg: 'Lorem ipsum dolor sit amet'},
+        {type: 'guess', guess: 'ernesto', letters: 3},
+        {type: 'fail', fail: 'ernesto'},
+        {type: 'help', help: 'Blah Blah Blah'},
+        {type: 'error', error: 'MWAHAHAHAHA'}
+      ]);
       
       App.playerOverviewView = Ember.View.extend({
         templateName: 'player-overview'
@@ -162,6 +216,66 @@
       App.activityView = Ember.View.extend({
         templateName: 'activity'
       });
+      
+      App.activityChannel.bind('update', function(update) {
+        console.log(update);
+        App.activityController.unshiftObject(update);
+      });
+      
+      function say(msg) {
+        console.log("say: " + msg);
+      };
+      
+      App.displayError = function (error) {
+        App.activityController.unshiftObject({type: "error", error: error});
+      };
+      
+      App.commands = {
+        help: function () {
+          App.activityController.unshiftObject({type: 'help', help: $('#help').html()});
+        },
+        h: "help",
+        guess: function () {
+          
+        },
+        g: "guess",
+        solve: function () {
+          
+        },
+        s: "solve"
+      };
+      
+      function run(input) {
+        input = input.substr(1, cmd.length).trim().split(' ');
+        arg = input[1];
+        cmd = input[0];
+        fn = App.commands[cmd];
+        if (fn === undefined) {
+          App.displayError("Unknown command: " + cmd);
+        } else {
+          fn(arg);
+        }
+        console.log("Command: " + cmd);
+      };
+      
+      $('form').live('submit', function (event) {
+        event.preventDefault();
+        var input = App.input;
+        var txt = input.val().trim();
+        if (txt.length > 0) {
+          if (txt[0] == "/") {
+            run(txt);
+          } else {
+            say(txt);
+          }
+        }
+        
+        input.val('');
+        input.focus();
+      });
+      
+      App.input.focus();
+      App.commands.help();
     })();
   </script>
 </body>
