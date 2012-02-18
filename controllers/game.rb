@@ -23,7 +23,7 @@ end
 
 post '/game/:game_id/solve/' do
   channel = GameChannel.new('111')
-  solution = params[:post]['solution']
+  solution = params['solution']
   
   if @game.solve_by_player(@user, '111', solution)
     channel.publish_win(@user, solution)
@@ -36,6 +36,6 @@ post '/game/:game_id/solve/' do
 end
 
 post '/game/:game_id/chat' do
-  message = params[:post]['message']
+  message = params['message']
   channel.publish_message(@user, message)
 end
