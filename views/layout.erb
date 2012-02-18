@@ -47,7 +47,12 @@
           <ul class="nav">
             <li class="active"><a href="#">Home</a></li>
           </ul>
-          <p class="navbar-text pull-right logged-in">Logged in as <a href="#">player1</a></p>
+
+		  	<% unless @user.nil? %>
+          <p class="navbar-text pull-right logged-in">Logged in as <a href="#"><%= @user %></a> | <a href="/logout">Logout</a></p>
+				<% else %>
+					<p class="navbar-text pull-right logged-in"><a href="/twitter/connect">Login</a>
+				<% end %>
         </div><!--/.nav-collapse -->
       </div>
     </div>
@@ -64,7 +69,7 @@
 		var inmobi_conf = {
 		siteid : "4028cb1334ef46a9013590668c021e2f",
 		slot : "15",
-		test: false
+		test: true
 	};
 	</script>
 	<script type="text/javascript" src="http://cf.cdn.inmobi.com/ad/inmobi.js"></script>
