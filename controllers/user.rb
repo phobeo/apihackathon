@@ -1,8 +1,4 @@
 require 'lib/twitter'
-  
-get '/me' do
-  'Yepa'
-end
 
 get '/logout' do
   session.clear
@@ -17,6 +13,7 @@ end
 get '/twitter/callback' do
   twitter = Social::Twitter.new(settings.twitter_config, session)
   if twitter.authenticate!(session)
+    @game.create_player(session[:tw_screen_name])
     redirect '/'
     # TODO: add user to the pool
   else

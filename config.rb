@@ -8,6 +8,8 @@ configure do
   })
   
   set :session_secret, ENV['SESSION_KEY'] || '1234'
+  
+  set :redis_url, ENV['REDISTOGO_URL'] || 'localhost:6379'
 end
 
 Pusher.app_id = ENV['PUSHER_APP_ID'] || 'app'
