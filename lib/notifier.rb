@@ -44,7 +44,7 @@ class GameChannel
   protected
   
   def publish(event, data)
-    Pusher[@channel_id].trigger(UPDATE_EVENT, json.dumps(data))
+    Pusher[@channel_id].trigger(UPDATE_EVENT, JSON.dump(data))
   end
 
 end
