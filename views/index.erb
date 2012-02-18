@@ -2,6 +2,7 @@
     <div class="row-fluid">
       <div class="span12">
 		<h1> hallo <%= @user %> </h1>
+		<p>You have <%= @user_score %> points :)</p>
 			
       </div><!--/span-->
     </div><!--/row-->
@@ -9,6 +10,6 @@
       <div class="span12">
 		<p>please wait while we get some other players to play with you!</p>
 		<p><img src="img/wait30.gif"></img></p>
-			
+		<p><a id="playbtn" href="/game" class="btn primary" style="display:none">go play!</a></p>	
       </div><!--/span-->
     </div><!--/row-->
