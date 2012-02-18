@@ -38,6 +38,3 @@ class GameChannel
   end
 
 end
-
-
-
