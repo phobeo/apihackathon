@@ -1,4 +1,3 @@
-require 'sinatra/base'
 require 'lib/twitter'
   
 get '/me' do
