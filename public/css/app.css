@@ -1,0 +1,32 @@
+body {
+	margin-top:5px;
+	max-width:95%;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.sidebar-nav {
+	padding: 9px 0;
+}
+
+.navbar .brand {
+	color:#A5A5A5;
+	font-weight:bold;
+	font-size:28x;
+}
+
+.navbar {
+	font-size:12px;
+}
+
+.bluehighlight {
+	color:#548AD2;
+}
+
+#welcome {
+	margin-top:16px;
+}
+
+.logged-in {
+	font-size:smaller;
+}

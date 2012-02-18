@@ -1,8 +1,9 @@
-require 'rubygems'
+require 'sinatra'
+require 'sinatra/base'
 require 'bundler/setup'
 
-require 'sinatra'
-
-get '/' do
-  'Waka, waka'
+class Main < Sinatra::Base
+  get '/' do
+    erb :index
+  end
 end
