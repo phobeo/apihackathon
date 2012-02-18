@@ -160,8 +160,14 @@
       window.App = Ember.Application.create();
       // To add ERB (channel)
       App.activityChannel = (new Pusher('0d4b173d1715a936068c')).subscribe('test-hangman');
+      App.URIs = {
+        guess: "/blabla",
+        solve: "/blabla",
+        say: "/blabla"
+      };
+      
       App.input = $('input#cmd');
-      App.maxTries = 5;
+      App.maxTries = 7;
       
       App.Player = Person = Ember.Object.extend({
         username: 'ladybenko',
@@ -169,12 +175,20 @@
         tries: 0,
         
         word: function() {
-          this.get('wordProgress').split('').join(' ');
+          return this.get('wordProgress').split('').join(' ');
         }.property('wordProgress'),
         
         lives: function () {
           return App.maxTries - this.get('tries');
-        }.property('tries')
+        }.property('tries'),
+        
+        isDead: funciton () {
+          return tries >= App.maxTries;
+        }.property('tries'),
+        
+        fail: function () {
+          this.set('tries', this.get('tries') + 1);
+        }
       });
       
       App.players = {
@@ -217,38 +231,54 @@
         templateName: 'activity'
       });
       
-      App.activityChannel.bind('update', function(update) {
-        console.log(update);
-        App.activityController.unshiftObject(update);
-      });
-      
-      function say(msg) {
-        console.log("say: " + msg);
-      };
+      function updatePlayer(object) {
+        App.currentPlayer.setProperties(object);
+      }
       
       App.displayError = function (error) {
         App.activityController.unshiftObject({type: "error", error: error});
       };
       
       App.commands = {
+        say: function (arg) {
+          $.ajax({
+            type: 'POST',
+            url: App.URIs.say,
+            data: {message: arg},
+            success: updatePlayer,
+            dataType: 'json'
+          });
+        },
+        me: 'say',
         help: function () {
           App.activityController.unshiftObject({type: 'help', help: $('#help').html()});
         },
         h: "help",
-        guess: function () {
-          
+        guess: function (arg) {
+          $.ajax({
+            type: 'POST',
+            url: App.URIs.guess + "/" + arg,
+            success: updatePlayer,
+            dataType: 'json'
+          });
         },
         g: "guess",
-        solve: function () {
-          
+        solve: function (arg) {
+          $.ajax({
+            type: 'POST',
+            url: App.URIs.solve,
+            data: {solution: arg},
+            success: updatePlayer,
+            dataType: 'json'
+          });
         },
         s: "solve"
       };
       
       function run(input) {
         input = input.substr(1, cmd.length).trim().split(' ');
-        arg = input[1];
-        cmd = input[0];
+        cmd = input.shift();
+        arg = input.join(' ');
         fn = App.commands[cmd];
         if (fn === undefined) {
           App.displayError("Unknown command: " + cmd);
@@ -256,6 +286,7 @@
           fn(arg);
         }
         console.log("Command: " + cmd);
+        console.log("Argumnet: " + arg);
       };
       
       $('form').live('submit', function (event) {
@@ -266,13 +297,23 @@
           if (txt[0] == "/") {
             run(txt);
           } else {
-            say(txt);
+            App.commands.say(txt);
           }
         }
         
         input.val('');
         input.focus();
       });
+      
+      
+      App.activityChannel.bind('update', function(update) {
+        console.log(update);
+        App.activityController.unshiftObject(update);
+        if (update.type == "fail") {
+          App.players[update.fail].fail();
+        }
+      });
+      
       
       App.input.focus();
       App.commands.help();
