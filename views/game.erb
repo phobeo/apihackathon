@@ -73,7 +73,7 @@
     <form method="post" accept-charset="utf-8" class="form-horizontal">
       <div class="control-group">
         <div class="controls">
-          <input class="input-xxlarge" placeholder="/help" id="cmd">
+          <input class="input-xxlarge" id="cmd">
           <input class="btn btn-primary" type="submit" name="send" value="send!">
         </div>
       </div>
@@ -187,6 +187,7 @@
         }.property('tries'),
         
         fail: function () {
+          console.log('fail');
           this.set('tries', this.get('tries') + 1);
         }
       });
@@ -282,7 +283,10 @@
         fn = App.commands[cmd];
         if (fn === undefined) {
           App.displayError("Unknown command: " + cmd);
+        } else if ($.isFunction(fn)) {
+          fn(arg);
         } else {
+          fn = App.commands[fn];
           fn(arg);
         }
         console.log("Command: " + cmd);
