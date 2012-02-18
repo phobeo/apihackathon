@@ -171,7 +171,7 @@
       
       App.Player = Person = Ember.Object.extend({
         username: 'ladybenko',
-        wordProgress: '_______',
+        wordProgress: '__p___s',
         tries: 0,
         
         word: function() {
@@ -195,7 +195,7 @@
       App.players = {
         // To add ERB (player initializatio)
         'ernesto': App.Player.create({username: 'ernesto'}),
-        'ladybenko': App.Player.create({username: 'ladybenko'})
+        'ladybenko': App.Player.create({username: 'ladybenko', tries: 3})
       }
       
       // To add ERB (player initializatio)
@@ -217,11 +217,8 @@
       // To add ERB (activity log)
       App.activityController.pushObjects([
         {type: 'clue', requestedBy: 'ernesto', clue: 'text'},
-        {type: 'msg', username: 'ernesto', msg: 'Lorem ipsum dolor sit amet'},
         {type: 'guess', guess: 'ernesto', letters: 3},
-        {type: 'fail', fail: 'ernesto'},
-        {type: 'help', help: 'Blah Blah Blah'},
-        {type: 'error', error: 'MWAHAHAHAHA'}
+        {type: 'fail', fail: 'ernesto'}
       ]);
       
       App.playerOverviewView = Ember.View.extend({
@@ -321,7 +318,6 @@
       
       
       App.input.focus();
-      App.commands.help();
     })();
   </script>
 </body>
