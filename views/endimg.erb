@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>gatico mojado</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+	<script>
+
+	$(function(){
+		
+		// Setup initial variables and config
+		var
+			$window = $(window),
+			$canvas = $("#canvas"),
+			canvas  = $canvas[0],
+			scaleX  = 1,
+			scaleY	= 1,
+			draw    = canvas.getContext('2d'),
+			width 	= 1,
+			height 	= 1,
+			buffer 	= draw.createImageData(width, height)
+		;
+
+		// Set initial canvas size and deal with resizing
+		var setCanvasSize = function(){
+			canvas.setAttribute('width', $canvas.width() * scaleX);
+			canvas.setAttribute('height', $canvas.height() * scaleY);
+			width = canvas.width;
+			height = canvas.height;
+			buffer = draw.createImageData(width, height);
+			if(renderer){
+				renderer.setBuffer(buffer);
+			}
+		}
+		setCanvasSize();
+
+		var renderer = new window[effect](buffer);
+		
+		// Animation loop
+		
+		var
+			timeStamp = new Date(),
+			i = 0,
+			$fps = $("#fps")
+		;
+		
+		// This runs our animation
+		setInterval(function(){
+				renderer.frame();
+				i++;
+				draw.putImageData(buffer, 0, 0);
+			},
+			30
+		);
+		/**/
+		
+		if($fps.length > 0){
+			// Frame rate calc (every 5s)
+			setInterval(function(){
+					var s = new Date() - timeStamp;
+					$fps.text(Math.round(i/s*1000)+'fps');
+					timeStamp = new Date();
+					i = 0;
+				},
+				5000
+			)
+		}
+		
+		
+	});
+	
+	</script>
+	<style>
+	
+		html,
+		body {
+			position: relative;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		#canvas {
+			position: absolute;
+			background: url('/img/gato_mojado.jpg');
+			background-size: 100% 100%;
+			width: 210px;
+			height: 210px;
+			left: 0;
+			top: 0;
+		}
+		
+	</style>
+</head>
+<body>
+	
+	<canvas id="canvas"></canvas>
+	
+</body>
+</html>
