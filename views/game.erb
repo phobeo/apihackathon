@@ -27,6 +27,14 @@
       font-size: 60pt;
       line-height: 60pt;
     }
+    .player iframe {
+      overflow: none;
+      margin: 0px;
+      padding: 0px;
+      border: none;
+      height: 210px;
+      width: 210px;
+    }
     #word {
       text-align: center;
       font-size: 60pt;
@@ -90,7 +98,8 @@
     <div class="player span3">
       <div class="thumbnail">
         <h5>{{player.username}}'s fails left</h5><!--'-->
-        <p class="score">{{player.lives}}</p>
+        <!--p class="score">{{player.lives}}</p-->
+        <iframe {{bindAttr src="player.gatico"}}></iframe>
       </div>
     </div>
   </script>
@@ -180,6 +189,10 @@
         
         lives: function () {
           return App.maxTries - this.get('tries');
+        }.property('tries'),
+        
+        gatico: function () {
+          return "/imgrender/" + this.get('tries');
         }.property('tries'),
         
         isDead: function () {
