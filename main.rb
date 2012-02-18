@@ -11,7 +11,11 @@ require 'helpers/misc'
 require 'user'
 
 get '/' do
-  erb :index
+  if session[:user_id]
+    erb :index
+  else
+    erb :login
+  end
 end
 
 get '/game' do
