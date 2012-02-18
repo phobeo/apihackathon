@@ -8,5 +8,9 @@ configure do
   set :session_secret, ENV['SESSION_KEY'] || '1234'
 end
 
+Pusher.app_id = ENV['PUSHER_APP_ID'] || 'app'
+Pusher.key = ENV['PUSHER_API_KEY'] || 'key'
+Pusher.secret = ENV['PUSHER_SECRET_KEY'] || 'secret'
+
 enable :sessions
 
