@@ -47,7 +47,12 @@
           <ul class="nav">
             <li class="active"><a href="#">Home</a></li>
           </ul>
-          <p class="navbar-text pull-right logged-in">Logged in as <a href="#">player1</a></p>
+
+		  	<% unless @user.nil? %>
+          <p class="navbar-text pull-right logged-in">Logged in as <a href="#"><%= @user.name %></a> | <a href="/logout">Logout</a></p>
+				<% else %>
+					<p class="navbar-text pull-right logged-in"><a href="/twitter/connect">Login</a>
+				<% end %>
         </div><!--/.nav-collapse -->
       </div>
     </div>
