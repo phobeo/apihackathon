@@ -159,11 +159,11 @@
     (function () {
       window.App = Ember.Application.create();
       // To add ERB (channel)
-      App.activityChannel = (new Pusher('0d4b173d1715a936068c')).subscribe('test-hangman');
+      App.activityChannel = (new Pusher('0d4b173d1715a936068c')).subscribe('game');
       App.URIs = {
-        guess: "/blabla",
-        solve: "/blabla",
-        say: "/blabla"
+        guess: "/game/111/guess",
+        solve: "/game/111/solve/",
+        say: "/game/111/chat"
       };
       
       App.input = $('input#cmd');
@@ -258,7 +258,8 @@
         guess: function (arg) {
           $.ajax({
             type: 'POST',
-            url: App.URIs.guess + "/" + arg,
+            url: App.URIs.guess,
+            data: {letter: arg},
             success: updatePlayer,
             dataType: 'json'
           });
